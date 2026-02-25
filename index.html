@@ -1,564 +1,1240 @@
-import React, { useState, useMemo } from 'react';
-import { Search, X, Edit2, Trash2, Star, ArrowRight } from 'lucide-react';
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portal Horizonte Elite</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 
-export default function NewsPortal() {
-  const [darkMode, setDarkMode] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [showModal, setShowModal] = useState(false);
-  const [selectedNews, setSelectedNews] = useState(null);
-  const [editingIndex, setEditingIndex] = useState(null);
-
-  const [news, setNews] = useState([
-    {
-      id: 1,
-      title: 'Brasil avança em tecnologia digital',
-      subtitle: 'Investimentos estrangeiros crescem 45% em startups nacionais',
-      author: 'Marina Silva',
-      category: 'Brasil',
-      content: 'O Brasil registrou crescimento expressivo no setor tecnológico, com investimentos estrangeiros alcançando níveis históricos.\n\nEspecialistas apontam que o aumento de investimentos em startups e empresas de tecnologia reflete a confiança global no potencial inovador brasileiro.\n\nO cenário é considerado promissor para os próximos anos, com projeções de que o país se torne um dos maiores hubs de inovação da América Latina.',
-      image: 'https://images.unsplash.com/photo-1460925895917-adf4e4be5dbd?w=1200&h=600&fit=crop',
-      highlight: true,
-      date: new Date('2024-12-10').toLocaleDateString('pt-BR'),
-      views: 12500
-    },
-    {
-      id: 2,
-      title: 'Mudanças climáticas afetam agricultura global',
-      author: 'João Santos',
-      category: 'Mundo',
-      content: 'Estudos recentes indicam que as mudanças climáticas estão impactando significativamente a produção agrícola mundial.',
-      image: 'https://images.unsplash.com/photo-1559027615-cd looker-d3526b1e6b0?w=600&h=400&fit=crop',
-      highlight: false,
-      date: new Date('2024-12-09').toLocaleDateString('pt-BR'),
-      views: 8300
-    },
-    {
-      id: 3,
-      title: 'Inteligência artificial revoluciona a medicina',
-      author: 'Dr. Lucas Pereira',
-      category: 'Tecnologia',
-      content: 'Novos modelos de IA estão sendo utilizados para diagnósticos mais precisos e rápidos em hospitais.',
-      image: 'https://images.unsplash.com/photo-1576091160550-112173f7f869?w=600&h=400&fit=crop',
-      highlight: false,
-      date: new Date('2024-12-08').toLocaleDateString('pt-BR'),
-      views: 15200
-    },
-    {
-      id: 4,
-      title: 'Copa do Mundo 2026: principais favoritas',
-      author: 'Paulo Gomes',
-      category: 'Esportes',
-      content: 'Análise das seleções mais fortes para a próxima Copa do Mundo.',
-      image: 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=600&h=400&fit=crop',
-      highlight: false,
-      date: new Date('2024-12-07').toLocaleDateString('pt-BR'),
-      views: 19400
-    }
-  ]);
-
-  const [formData, setFormData] = useState({
-    title: '',
-    subtitle: '',
-    author: '',
-    category: 'Brasil',
-    content: '',
-    image: '',
-    highlight: false
-  });
-
-  const filteredNews = useMemo(() => {
-    return news.filter(item =>
-      item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.author.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  }, [news, searchTerm]);
-
-  const highlightedNews = filteredNews.find(n => n.highlight);
-  const regularNews = filteredNews.filter(n => !n.highlight);
-
-  const handleSave = () => {
-    if (!formData.title || !formData.author || !formData.content) {
-      alert('Preencha todos os campos obrigatórios');
-      return;
-    }
-
-    if (editingIndex !== null) {
-      const updated = [...news];
-      updated[editingIndex] = {
-        ...updated[editingIndex],
-        ...formData,
-        date: updated[editingIndex].date
-      };
-      setNews(updated);
-    } else {
-      setNews([{
-        ...formData,
-        id: Math.max(...news.map(n => n.id), 0) + 1,
-        date: new Date().toLocaleDateString('pt-BR'),
-        views: 0,
-        image: formData.image || 'https://images.unsplash.com/photo-1557804506-669714531433?w=600&h=400&fit=crop'
-      }, ...news]);
-    }
-
-    resetForm();
-    setShowModal(false);
-  };
-
-  const handleEdit = (index) => {
-    setEditingIndex(index);
-    setFormData(news[index]);
-    setShowModal(true);
-  };
-
-  const handleDelete = (index) => {
-    if (confirm('Tem certeza que deseja excluir?')) {
-      setNews(news.filter((_, i) => i !== index));
-    }
-  };
-
-  const toggleHighlight = (index) => {
-    const updated = news.map((n, i) => ({
-      ...n,
-      highlight: i === index
-    }));
-    setNews(updated);
-  };
-
-  const resetForm = () => {
-    setFormData({
-      title: '',
-      subtitle: '',
-      author: '',
-      category: 'Brasil',
-      content: '',
-      image: '',
-      highlight: false
-    });
-    setEditingIndex(null);
-  };
-
-  return (
-    <div className={`min-h-screen transition-colors duration-300 ${
-      darkMode ? 'bg-slate-950 text-white' : 'bg-gradient-to-br from-slate-50 to-slate-100 text-slate-900'
-    }`}>
-      {/* Header */}
-      <header className={`sticky top-0 z-50 ${darkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'} border-b backdrop-blur-sm`}>
-        <div className="max-w-7xl mx-auto px-4 py-5 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className={`w-10 h-10 rounded-lg font-bold text-lg flex items-center justify-center ${
-              darkMode ? 'bg-blue-600 text-white' : 'bg-gradient-to-br from-blue-600 to-blue-700 text-white'
-            }`}>
-              H
-            </div>
-            <h1 className="text-2xl font-bold tracking-tight">Horizonte Elite</h1>
-          </div>
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => setDarkMode(!darkMode)}
-              className={`p-2 rounded-lg transition-all ${
-                darkMode ? 'bg-slate-800 hover:bg-slate-700' : 'bg-slate-200 hover:bg-slate-300'
-              }`}
-            >
-              {darkMode ? '☀️' : '🌙'}
-            </button>
-            <button
-              onClick={() => {
-                resetForm();
-                setShowModal(true);
-              }}
-              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-all hover:shadow-lg"
-            >
-              + Nova Notícia
-            </button>
-          </div>
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 py-12">
-        {/* Search */}
-        <div className="mb-12">
-          <div className="relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5" />
-            <input
-              type="text"
-              placeholder="Buscar notícias, autores, categorias..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className={`w-full pl-12 pr-4 py-3 rounded-xl font-medium transition-all ${
-                darkMode
-                  ? 'bg-slate-800 border-slate-700 text-white placeholder-slate-500 focus:border-blue-500'
-                  : 'bg-white border-slate-200 text-slate-900 placeholder-slate-400 focus:border-blue-500'
-              } border focus:outline-none focus:ring-2 focus:ring-blue-500/20`}
-            />
-          </div>
-        </div>
-
-        {/* Featured Article */}
-        {highlightedNews && (
-          <article
-            onClick={() => setSelectedNews(highlightedNews)}
-            className={`mb-16 rounded-2xl overflow-hidden cursor-pointer group transition-all duration-500 ${
-              darkMode ? 'bg-slate-800' : 'bg-white'
-            } shadow-xl hover:shadow-2xl`}
-          >
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-0">
-              <div className="md:col-span-2 overflow-hidden">
-                <img
-                  src={highlightedNews.image}
-                  alt={highlightedNews.title}
-                  className="w-full h-96 object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-              </div>
-              <div className="p-8 md:p-10 flex flex-col justify-between">
-                <div>
-                  <div className="inline-block mb-4">
-                    <span className="text-xs font-bold tracking-widest text-blue-600 uppercase">
-                      {highlightedNews.category}
-                    </span>
-                  </div>
-                  <h2 className="text-3xl font-bold mb-3 leading-tight">
-                    {highlightedNews.title}
-                  </h2>
-                  {highlightedNews.subtitle && (
-                    <p className={`text-lg mb-6 ${darkMode ? 'text-slate-400' : 'text-slate-600'}`}>
-                      {highlightedNews.subtitle}
-                    </p>
-                  )}
-                </div>
-                <div className="pt-6 border-t border-slate-200 dark:border-slate-700">
-                  <p className={`text-sm font-medium mb-4 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-                    {highlightedNews.author} • {highlightedNews.date}
-                  </p>
-                  <div className="flex items-center gap-2 text-blue-600 font-semibold group-hover:gap-3 transition-all">
-                    Ler artigo <ArrowRight className="w-4 h-4" />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </article>
-        )}
-
-        {/* News Grid */}
-        {regularNews.length > 0 && (
-          <div>
-            <h3 className="text-sm font-bold tracking-widest text-slate-500 uppercase mb-6">
-              Últimas notícias
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {regularNews.map((item, index) => (
-                <article
-                  key={item.id}
-                  className={`group rounded-xl overflow-hidden cursor-pointer transition-all duration-300 ${
-                    darkMode ? 'bg-slate-800 hover:bg-slate-750' : 'bg-white hover:shadow-xl'
-                  } ${!darkMode && 'shadow-md'}`}
-                  onClick={() => setSelectedNews(item)}
-                >
-                  <div className="aspect-video overflow-hidden">
-                    <img
-                      src={item.image}
-                      alt={item.title}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                    />
-                  </div>
-                  <div className="p-5">
-                    <span className="text-xs font-bold text-blue-600 uppercase tracking-widest">
-                      {item.category}
-                    </span>
-                    <h3 className="text-lg font-bold mt-2 mb-3 line-clamp-3 group-hover:text-blue-600 transition-colors">
-                      {item.title}
-                    </h3>
-                    <p className={`text-sm mb-4 line-clamp-2 ${darkMode ? 'text-slate-400' : 'text-slate-600'}`}>
-                      {item.content.substring(0, 100)}...
-                    </p>
-                    <div className="flex items-center justify-between">
-                      <div className="text-xs font-medium text-slate-500">
-                        {item.author} • {item.date}
-                      </div>
-                      <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            toggleHighlight(news.findIndex(n => n.id === item.id));
-                          }}
-                          className="p-1.5 hover:bg-yellow-100 dark:hover:bg-slate-700 rounded transition-colors"
-                          title="Marcar como destaque"
-                        >
-                          <Star className="w-4 h-4 text-yellow-500" />
-                        </button>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleEdit(news.findIndex(n => n.id === item.id));
-                          }}
-                          className="p-1.5 hover:bg-blue-100 dark:hover:bg-slate-700 rounded transition-colors"
-                          title="Editar"
-                        >
-                          <Edit2 className="w-4 h-4 text-blue-600" />
-                        </button>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleDelete(news.findIndex(n => n.id === item.id));
-                          }}
-                          className="p-1.5 hover:bg-red-100 dark:hover:bg-slate-700 rounded transition-colors"
-                          title="Excluir"
-                        >
-                          <Trash2 className="w-4 h-4 text-red-500" />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </article>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {filteredNews.length === 0 && (
-          <div className="text-center py-20">
-            <p className={`text-lg ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-              Nenhuma notícia encontrada
-            </p>
-          </div>
-        )}
-      </main>
-
-      {/* Modal - Single News View */}
-      {selectedNews && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4"
-          onClick={() => setSelectedNews(null)}
-        >
-          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
-          <article
-            className={`relative w-full max-w-3xl max-h-[90vh] overflow-auto rounded-2xl ${
-              darkMode ? 'bg-slate-900' : 'bg-white'
-            } shadow-2xl`}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              onClick={() => setSelectedNews(null)}
-              className={`sticky top-4 right-4 z-10 p-2 rounded-full transition-all ${
-                darkMode ? 'bg-slate-800 hover:bg-slate-700' : 'bg-slate-100 hover:bg-slate-200'
-              }`}
-            >
-              <X className="w-5 h-5" />
-            </button>
-
-            <img
-              src={selectedNews.image}
-              alt={selectedNews.title}
-              className="w-full h-96 object-cover"
-            />
-
-            <div className="p-8 md:p-12">
-              <div className="mb-4">
-                <span className="text-xs font-bold tracking-widest text-blue-600 uppercase">
-                  {selectedNews.category}
-                </span>
-              </div>
-
-              <h1 className="text-4xl font-bold mb-3 leading-tight">
-                {selectedNews.title}
-              </h1>
-
-              {selectedNews.subtitle && (
-                <p className={`text-xl mb-6 ${darkMode ? 'text-slate-400' : 'text-slate-600'}`}>
-                  {selectedNews.subtitle}
-                </p>
-              )}
-
-              <div className={`flex items-center justify-between py-4 border-t border-b ${
-                darkMode ? 'border-slate-800' : 'border-slate-200'
-              } my-6`}>
-                <div>
-                  <p className="font-semibold">{selectedNews.author}</p>
-                  <p className={`text-sm ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-                    {selectedNews.date}
-                  </p>
-                </div>
-                <div className={`text-right text-sm ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-                  {selectedNews.views.toLocaleString('pt-BR')} leitura{selectedNews.views !== 1 ? 's' : ''}
-                </div>
-              </div>
-
-              <div className={`prose prose-sm max-w-none ${darkMode ? 'prose-invert' : ''}`}>
-                {selectedNews.content.split('\n').map((paragraph, i) => (
-                  paragraph.trim() && (
-                    <p key={i} className={`mb-5 text-lg leading-relaxed ${
-                      darkMode ? 'text-slate-300' : 'text-slate-700'
-                    }`}>
-                      {paragraph}
-                    </p>
-                  )
-                ))}
-              </div>
-            </div>
-          </article>
-        </div>
-      )}
-
-      {/* Modal - Create/Edit News */}
-      {showModal && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4"
-          onClick={() => setShowModal(false)}
-        >
-          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
-          <div
-            className={`relative w-full max-w-2xl rounded-2xl ${
-              darkMode ? 'bg-slate-900' : 'bg-white'
-            } shadow-2xl p-8 max-h-[90vh] overflow-auto`}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold">
-                {editingIndex !== null ? 'Editar Notícia' : 'Nova Notícia'}
-              </h2>
-              <button
-                onClick={() => setShowModal(false)}
-                className={`p-2 rounded-lg transition-all ${
-                  darkMode ? 'hover:bg-slate-800' : 'hover:bg-slate-100'
-                }`}
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-semibold mb-2">Título *</label>
-                <input
-                  type="text"
-                  value={formData.title}
-                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  className={`w-full px-4 py-2 rounded-lg border transition-all ${
-                    darkMode
-                      ? 'bg-slate-800 border-slate-700 text-white focus:border-blue-500'
-                      : 'bg-white border-slate-200 focus:border-blue-500'
-                  } focus:outline-none focus:ring-2 focus:ring-blue-500/20`}
-                  placeholder="Digite o título..."
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold mb-2">Subtítulo</label>
-                <input
-                  type="text"
-                  value={formData.subtitle}
-                  onChange={(e) => setFormData({ ...formData, subtitle: e.target.value })}
-                  className={`w-full px-4 py-2 rounded-lg border transition-all ${
-                    darkMode
-                      ? 'bg-slate-800 border-slate-700 text-white focus:border-blue-500'
-                      : 'bg-white border-slate-200 focus:border-blue-500'
-                  } focus:outline-none focus:ring-2 focus:ring-blue-500/20`}
-                  placeholder="Digite o subtítulo (opcional)..."
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-semibold mb-2">Autor *</label>
-                  <input
-                    type="text"
-                    value={formData.author}
-                    onChange={(e) => setFormData({ ...formData, author: e.target.value })}
-                    className={`w-full px-4 py-2 rounded-lg border transition-all ${
-                      darkMode
-                        ? 'bg-slate-800 border-slate-700 text-white focus:border-blue-500'
-                        : 'bg-white border-slate-200 focus:border-blue-500'
-                    } focus:outline-none focus:ring-2 focus:ring-blue-500/20`}
-                    placeholder="Nome do autor..."
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold mb-2">Categoria</label>
-                  <select
-                    value={formData.category}
-                    onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                    className={`w-full px-4 py-2 rounded-lg border transition-all ${
-                      darkMode
-                        ? 'bg-slate-800 border-slate-700 text-white focus:border-blue-500'
-                        : 'bg-white border-slate-200 focus:border-blue-500'
-                    } focus:outline-none focus:ring-2 focus:ring-blue-500/20`}
-                  >
-                    <option>Brasil</option>
-                    <option>Mundo</option>
-                    <option>Tecnologia</option>
-                    <option>Esportes</option>
-                    <option>Cultura</option>
-                    <option>Economia</option>
-                  </select>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold mb-2">URL da Imagem</label>
-                <input
-                  type="text"
-                  value={formData.image}
-                  onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                  className={`w-full px-4 py-2 rounded-lg border transition-all ${
-                    darkMode
-                      ? 'bg-slate-800 border-slate-700 text-white focus:border-blue-500'
-                      : 'bg-white border-slate-200 focus:border-blue-500'
-                  } focus:outline-none focus:ring-2 focus:ring-blue-500/20`}
-                  placeholder="https://..."
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold mb-2">Conteúdo *</label>
-                <textarea
-                  value={formData.content}
-                  onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                  className={`w-full px-4 py-3 rounded-lg border transition-all resize-none ${
-                    darkMode
-                      ? 'bg-slate-800 border-slate-700 text-white focus:border-blue-500'
-                      : 'bg-white border-slate-200 focus:border-blue-500'
-                  } focus:outline-none focus:ring-2 focus:ring-blue-500/20`}
-                  placeholder="Digite a matéria aqui... (separe parágrafos com Enter)"
-                  rows={8}
-                />
-              </div>
-
-              <label className="flex items-center gap-3 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={formData.highlight}
-                  onChange={(e) => setFormData({ ...formData, highlight: e.target.checked })}
-                  className="w-4 h-4 rounded"
-                />
-                <span className="font-semibold">Marcar como notícia em destaque</span>
-              </label>
-
-              <div className="flex gap-3 pt-4">
-                <button
-                  onClick={handleSave}
-                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg font-semibold transition-all hover:shadow-lg"
-                >
-                  {editingIndex !== null ? 'Atualizar' : 'Publicar'}
-                </button>
-                <button
-                  onClick={() => {
-                    setShowModal(false);
-                    resetForm();
-                  }}
-                  className={`flex-1 py-2 rounded-lg font-semibold transition-all ${
-                    darkMode
-                      ? 'bg-slate-800 hover:bg-slate-700'
-                      : 'bg-slate-200 hover:bg-slate-300'
-                  }`}
-                >
-                  Cancelar
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-  );
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: linear-gradient(135deg, #f0f4f8 0%, #e2e8f0 100%);
+  color: #1e293b;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+body.dark {
+  background: #0f172a;
+  color: #f1f5f9;
+}
+
+/* HEADER */
+header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: white;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 1.2rem 2rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  transition: background-color 0.3s ease;
+}
+
+body.dark header {
+  background: #1e293b;
+  border-bottom-color: #334155;
+}
+
+header .container {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.logo-icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: white;
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.2rem;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.btn {
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  font-family: 'Inter', sans-serif;
+}
+
+.btn-primary {
+  background: #2563eb;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #1d4ed8;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+  transform: translateY(-2px);
+}
+
+.btn-icon {
+  background: transparent;
+  color: #2563eb;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+}
+
+body.dark .btn-icon {
+  color: #60a5fa;
+}
+
+.btn-icon:hover {
+  background: rgba(37, 99, 235, 0.1);
+}
+
+body.dark .btn-icon:hover {
+  background: rgba(96, 165, 250, 0.1);
+}
+
+/* MAIN */
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+main {
+  padding: 3rem 1.5rem;
+}
+
+/* SEARCH */
+.search-box {
+  margin-bottom: 3rem;
+  position: relative;
+}
+
+.search-box input {
+  width: 100%;
+  padding: 1rem 1rem 1rem 2.8rem;
+  border-radius: 0.75rem;
+  border: 1px solid #e2e8f0;
+  font-size: 1rem;
+  font-family: 'Inter', sans-serif;
+  transition: all 0.3s ease;
+  background: white;
+  color: #1e293b;
+}
+
+body.dark .search-box input {
+  background: #1e293b;
+  border-color: #334155;
+  color: white;
+}
+
+.search-box input::placeholder {
+  color: #94a3b8;
+}
+
+body.dark .search-box input::placeholder {
+  color: #64748b;
+}
+
+.search-box input:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.search-icon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+  pointer-events: none;
+}
+
+body.dark .search-icon {
+  color: #64748b;
+}
+
+/* FEATURED ARTICLE */
+.featured {
+  margin-bottom: 4rem;
+  border-radius: 1.25rem;
+  overflow: hidden;
+  background: white;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  cursor: pointer;
+  transition: all 0.4s ease;
+}
+
+body.dark .featured {
+  background: #1e293b;
+}
+
+.featured:hover {
+  box-shadow: 0 20px 40px rgba(0,0,0,0.12);
+  transform: translateY(-4px);
+}
+
+.featured-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 0;
+}
+
+.featured-image {
+  overflow: hidden;
+  max-height: 400px;
+}
+
+.featured-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.featured:hover .featured-image img {
+  transform: scale(1.05);
+}
+
+.featured-content {
+  padding: 3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.featured-category {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: #2563eb;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+
+.featured h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.3;
+  margin-bottom: 1rem;
+  font-family: 'Playfair Display', serif;
+}
+
+.featured-subtitle {
+  font-size: 1.1rem;
+  color: #64748b;
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+}
+
+body.dark .featured-subtitle {
+  color: #cbd5e1;
+}
+
+.featured-meta {
+  padding-top: 1.5rem;
+  border-top: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+body.dark .featured-meta {
+  border-top-color: #334155;
+}
+
+.featured-author {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.featured-date {
+  font-size: 0.85rem;
+  color: #94a3b8;
+}
+
+body.dark .featured-date {
+  color: #64748b;
+}
+
+.featured-read {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #2563eb;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.featured:hover .featured-read {
+  gap: 1rem;
+}
+
+/* NEWS GRID */
+.section-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: #94a3b8;
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+}
+
+.news-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 4rem;
+}
+
+.news-card {
+  background: white;
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+body.dark .news-card {
+  background: #1e293b;
+}
+
+.news-card:hover {
+  box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+  transform: translateY(-4px);
+}
+
+.news-image {
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+}
+
+.news-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.news-card:hover .news-image img {
+  transform: scale(1.1);
+}
+
+.news-body {
+  padding: 1.5rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.news-category {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #2563eb;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.5rem;
+}
+
+.news-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.news-card:hover .news-title {
+  color: #2563eb;
+}
+
+.news-excerpt {
+  font-size: 0.9rem;
+  color: #64748b;
+  margin-bottom: 1rem;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  flex: 1;
+}
+
+body.dark .news-excerpt {
+  color: #cbd5e1;
+}
+
+.news-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 1rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+body.dark .news-footer {
+  border-top-color: #334155;
+}
+
+.news-meta {
+  font-size: 0.8rem;
+  color: #94a3b8;
+}
+
+body.dark .news-meta {
+  color: #64748b;
+}
+
+.news-actions {
+  display: flex;
+  gap: 0.5rem;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.news-card:hover .news-actions {
+  opacity: 1;
+}
+
+.action-btn {
+  width: 2rem;
+  height: 2rem;
+  border: none;
+  border-radius: 0.4rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
+}
+
+.action-btn:hover {
+  background: rgba(37, 99, 235, 0.1);
+  color: #2563eb;
+}
+
+.action-btn.delete:hover {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+.action-btn.star {
+  color: #f59e0b;
+}
+
+.action-btn.star:hover {
+  background: rgba(245, 158, 11, 0.1);
+}
+
+/* EMPTY STATE */
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: #94a3b8;
+}
+
+body.dark .empty-state {
+  color: #64748b;
+}
+
+/* MODALS */
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  animation: fadeIn 0.3s ease;
+}
+
+.modal.active {
+  display: flex;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal-content {
+  background: white;
+  border-radius: 1.25rem;
+  width: 100%;
+  max-width: 900px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+  animation: slideUp 0.3s ease;
+}
+
+body.dark .modal-content {
+  background: #1e293b;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(2rem);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+body.dark .modal-header {
+  border-bottom-color: #334155;
+}
+
+.modal-header h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #64748b;
+  transition: color 0.2s ease;
+  padding: 0.5rem;
+}
+
+.close-btn:hover {
+  color: #1e293b;
+}
+
+body.dark .close-btn:hover {
+  color: #f1f5f9;
+}
+
+.modal-body {
+  padding: 2rem;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+  background: white;
+  color: #1e293b;
+}
+
+body.dark .form-group input,
+body.dark .form-group textarea,
+body.dark .form-group select {
+  background: #0f172a;
+  border-color: #334155;
+  color: white;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 200px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.form-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.form-checkbox input {
+  width: auto;
+  cursor: pointer;
+}
+
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.form-actions button {
+  flex: 1;
+  padding: 0.75rem;
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: 'Inter', sans-serif;
+}
+
+.btn-submit {
+  background: #2563eb;
+  color: white;
+}
+
+.btn-submit:hover {
+  background: #1d4ed8;
+}
+
+.btn-cancel {
+  background: #e2e8f0;
+  color: #1e293b;
+}
+
+body.dark .btn-cancel {
+  background: #334155;
+  color: #f1f5f9;
+}
+
+.btn-cancel:hover {
+  background: #cbd5e1;
+}
+
+body.dark .btn-cancel:hover {
+  background: #475569;
+}
+
+/* ARTICLE VIEW */
+.article-view {
+  background: white;
+  border-radius: 1.25rem;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
+
+body.dark .article-view {
+  background: #1e293b;
+}
+
+.article-image {
+  width: 100%;
+  max-height: 500px;
+  object-fit: cover;
+}
+
+.article-content {
+  padding: 3rem;
+}
+
+.article-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid #e2e8f0;
+  margin-bottom: 2rem;
+}
+
+body.dark .article-meta {
+  border-bottom-color: #334155;
+}
+
+.article-author {
+  font-weight: 600;
+}
+
+.article-date {
+  font-size: 0.9rem;
+  color: #94a3b8;
+}
+
+body.dark .article-date {
+  color: #64748b;
+}
+
+.article-views {
+  font-size: 0.9rem;
+  color: #94a3b8;
+  text-align: right;
+}
+
+body.dark .article-views {
+  color: #64748b;
+}
+
+.article-text {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: #475569;
+}
+
+body.dark .article-text {
+  color: #cbd5e1;
+}
+
+.article-text p {
+  margin-bottom: 1.5rem;
+}
+
+.article-text p:last-child {
+  margin-bottom: 0;
+}
+
+.back-btn {
+  margin-top: 2rem;
+  padding: 0.75rem 1.5rem;
+  background: #e2e8f0;
+  color: #1e293b;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+body.dark .back-btn {
+  background: #334155;
+  color: #f1f5f9;
+}
+
+.back-btn:hover {
+  background: #cbd5e1;
+}
+
+body.dark .back-btn:hover {
+  background: #475569;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  header .container {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .featured-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .featured-content {
+    padding: 2rem;
+  }
+
+  .featured h2 {
+    font-size: 1.5rem;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .article-meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .article-content {
+    padding: 1.5rem;
+  }
+
+  .article-text {
+    font-size: 1rem;
+  }
+
+  .news-grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <div class="logo">
+      <div class="logo-icon">H</div>
+      <span>Horizonte Elite</span>
+    </div>
+    <div class="header-actions">
+      <button class="btn-icon" onclick="toggleDarkMode()" title="Alternar modo escuro">
+        <span id="theme-icon">🌙</span>
+      </button>
+      <button class="btn btn-primary" onclick="openCreateModal()">+ Nova Notícia</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="container">
+    <!-- SEARCH -->
+    <div class="search-box">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="searchInput" placeholder="Buscar notícias, autores, categorias..." oninput="handleSearch()">
+    </div>
+
+    <!-- FEATURED -->
+    <div id="featured"></div>
+
+    <!-- NEWS GRID -->
+    <h3 class="section-title">Últimas notícias</h3>
+    <div id="newsGrid" class="news-grid"></div>
+    <div id="emptyState" class="empty-state" style="display:none;">Nenhuma notícia encontrada</div>
+  </div>
+</main>
+
+<!-- MODAL: CREATE/EDIT NEWS -->
+<div id="createModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2 id="modalTitle">Nova Notícia</h2>
+      <button class="close-btn" onclick="closeCreateModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Título *</label>
+        <input type="text" id="titleInput" placeholder="Digite o título...">
+      </div>
+
+      <div class="form-group">
+        <label>Subtítulo</label>
+        <input type="text" id="subtitleInput" placeholder="Digite o subtítulo (opcional)...">
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Autor *</label>
+          <input type="text" id="authorInput" placeholder="Nome do autor...">
+        </div>
+        <div class="form-group">
+          <label>Categoria</label>
+          <select id="categoryInput">
+            <option>Brasil</option>
+            <option>Mundo</option>
+            <option>Tecnologia</option>
+            <option>Esportes</option>
+            <option>Cultura</option>
+            <option>Economia</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>URL da Imagem</label>
+        <input type="text" id="imageInput" placeholder="https://...">
+      </div>
+
+      <div class="form-group">
+        <label>Conteúdo *</label>
+        <textarea id="contentInput" placeholder="Digite a matéria aqui... (separe parágrafos com Enter)"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label class="form-checkbox">
+          <input type="checkbox" id="highlightInput">
+          Marcar como notícia em destaque
+        </label>
+      </div>
+
+      <div class="form-actions">
+        <button class="btn-submit" onclick="saveNews()">Publicar</button>
+        <button class="btn-cancel" onclick="closeCreateModal()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: VIEW ARTICLE -->
+<div id="viewModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2></h2>
+      <button class="close-btn" onclick="closeViewModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="articleView"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// DATA
+let newsData = [
+  {
+    id: 1,
+    title: 'Brasil avança em tecnologia digital',
+    subtitle: 'Investimentos estrangeiros crescem 45% em startups nacionais',
+    author: 'Marina Silva',
+    category: 'Brasil',
+    content: 'O Brasil registrou crescimento expressivo no setor tecnológico, com investimentos estrangeiros alcançando níveis históricos.\n\nEspecialistas apontam que o aumento de investimentos em startups e empresas de tecnologia reflete a confiança global no potencial inovador brasileiro.\n\nO cenário é considerado promissor para os próximos anos, com projeções de que o país se torne um dos maiores hubs de inovação da América Latina.',
+    image: 'https://images.unsplash.com/photo-1460925895917-adf4e4be5dbd?w=1200&h=600&fit=crop',
+    highlight: true,
+    date: '10/12/2024',
+    views: 12500
+  },
+  {
+    id: 2,
+    title: 'Mudanças climáticas afetam agricultura global',
+    author: 'João Santos',
+    category: 'Mundo',
+    content: 'Estudos recentes indicam que as mudanças climáticas estão impactando significativamente a produção agrícola mundial.\n\nSecas prolongadas e chuvas intensas afetam safras em diversas regiões do planeta.\n\nGovernos e organizações internacionais buscam soluções sustentáveis para mitigar os efeitos.',
+    image: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=600&h=400&fit=crop',
+    highlight: false,
+    date: '09/12/2024',
+    views: 8300
+  },
+  {
+    id: 3,
+    title: 'Inteligência artificial revoluciona a medicina',
+    author: 'Dr. Lucas Pereira',
+    category: 'Tecnologia',
+    content: 'Novos modelos de IA estão sendo utilizados para diagnósticos mais precisos e rápidos em hospitais.\n\nCirurgiões utilizando robótica inteligente conseguem realizar operações com maior precisão.\n\nA tecnologia promete salvar vidas e reduzir custos no sistema de saúde.',
+    image: 'https://images.unsplash.com/photo-1576091160550-112173f7f869?w=600&h=400&fit=crop',
+    highlight: false,
+    date: '08/12/2024',
+    views: 15200
+  },
+  {
+    id: 4,
+    title: 'Copa do Mundo 2026: principais favoritas',
+    author: 'Paulo Gomes',
+    category: 'Esportes',
+    content: 'Análise das seleções mais fortes para a próxima Copa do Mundo a ser realizada em 2026.\n\nFrança, Argentina e Brasil aparecem como principais candidatos ao título.\n\nSeleções emergentes também ganham destaque nas análises técnicas.',
+    image: 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=600&h=400&fit=crop',
+    highlight: false,
+    date: '07/12/2024',
+    views: 19400
+  }
+];
+
+let editingId = null;
+let filteredNews = [...newsData];
+
+// DARK MODE
+function toggleDarkMode() {
+  document.body.classList.toggle('dark');
+  const icon = document.getElementById('theme-icon');
+  icon.textContent = document.body.classList.contains('dark') ? '☀️' : '🌙';
+  localStorage.setItem('darkMode', document.body.classList.contains('dark'));
+}
+
+// INIT DARK MODE
+if (localStorage.getItem('darkMode') === 'true') {
+  document.body.classList.add('dark');
+  document.getElementById('theme-icon').textContent = '☀️';
+}
+
+// RENDER
+function render() {
+  renderFeatured();
+  renderNews();
+}
+
+function renderFeatured() {
+  const featured = filteredNews.find(n => n.highlight);
+  const container = document.getElementById('featured');
+  
+  if (!featured) {
+    container.innerHTML = '';
+    return;
+  }
+
+  container.innerHTML = `
+    <article class="featured" onclick="openViewModal(${featured.id})">
+      <div class="featured-grid">
+        <div class="featured-image">
+          <img src="${featured.image}" alt="${featured.title}">
+        </div>
+        <div class="featured-content">
+          <div>
+            <div class="featured-category">${featured.category}</div>
+            <h2>${featured.title}</h2>
+            ${featured.subtitle ? `<p class="featured-subtitle">${featured.subtitle}</p>` : ''}
+          </div>
+          <div class="featured-meta">
+            <div>
+              <div class="featured-author">${featured.author}</div>
+              <div class="featured-date">${featured.date}</div>
+            </div>
+            <div class="featured-read">
+              Ler artigo →
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+  `;
+}
+
+function renderNews() {
+  const regular = filteredNews.filter(n => !n.highlight);
+  const container = document.getElementById('newsGrid');
+  const emptyState = document.getElementById('emptyState');
+
+  if (regular.length === 0) {
+    container.innerHTML = '';
+    emptyState.style.display = 'block';
+    return;
+  }
+
+  emptyState.style.display = 'none';
+  container.innerHTML = regular.map(item => `
+    <article class="news-card" onclick="openViewModal(${item.id})">
+      <div class="news-image">
+        <img src="${item.image}" alt="${item.title}">
+      </div>
+      <div class="news-body">
+        <div class="news-category">${item.category}</div>
+        <h3 class="news-title">${item.title}</h3>
+        <p class="news-excerpt">${item.content.substring(0, 100)}...</p>
+        <div class="news-footer">
+          <div class="news-meta">${item.author} • ${item.date}</div>
+          <div class="news-actions">
+            <button class="action-btn star" onclick="toggleHighlight(event, ${item.id})" title="Marcar como destaque">⭐</button>
+            <button class="action-btn" onclick="openEditModal(event, ${item.id})" title="Editar">✏️</button>
+            <button class="action-btn delete" onclick="deleteNews(event, ${item.id})" title="Excluir">🗑️</button>
+          </div>
+        </div>
+      </div>
+    </article>
+  `).join('');
+}
+
+// SEARCH
+function handleSearch() {
+  const term = document.getElementById('searchInput').value.toLowerCase();
+  filteredNews = newsData.filter(item => 
+    item.title.toLowerCase().includes(term) ||
+    item.content.toLowerCase().includes(term) ||
+    item.author.toLowerCase().includes(term) ||
+    item.category.toLowerCase().includes(term)
+  );
+  render();
+}
+
+// MODALS
+function openCreateModal() {
+  editingId = null;
+  document.getElementById('modalTitle').textContent = 'Nova Notícia';
+  document.getElementById('titleInput').value = '';
+  document.getElementById('subtitleInput').value = '';
+  document.getElementById('authorInput').value = '';
+  document.getElementById('categoryInput').value = 'Brasil';
+  document.getElementById('imageInput').value = '';
+  document.getElementById('contentInput').value = '';
+  document.getElementById('highlightInput').checked = false;
+  document.getElementById('createModal').classList.add('active');
+}
+
+function closeCreateModal() {
+  document.getElementById('createModal').classList.remove('active');
+}
+
+function openViewModal(id) {
+  const item = newsData.find(n => n.id === id);
+  if (!item) return;
+
+  const content = item.content.split('\n').map(p => p.trim()).filter(p => p).map(p => `<p>${p}</p>`).join('');
+  
+  document.getElementById('articleView').innerHTML = `
+    <img src="${item.image}" alt="${item.title}" class="article-image">
+    <h1>${item.title}</h1>
+    ${item.subtitle ? `<p style="font-size: 1.2rem; color: #64748b; margin-bottom: 1rem;">${item.subtitle}</p>` : ''}
+    <div class="article-meta">
+      <div>
+        <div class="article-author">${item.author}</div>
+        <div class="article-date">${item.date}</div>
+      </div>
+      <div class="article-views">${item.views.toLocaleString('pt-BR')} visualizações</div>
+    </div>
+    <div class="article-text">${content}</div>
+    <button class="back-btn" onclick="closeViewModal()">← Voltar</button>
+  `;
+  
+  document.getElementById('viewModal').classList.add('active');
+}
+
+function closeViewModal() {
+  document.getElementById('viewModal').classList.remove('active');
+}
+
+function openEditModal(event, id) {
+  event.stopPropagation();
+  const item = newsData.find(n => n.id === id);
+  if (!item) return;
+
+  editingId = id;
+  document.getElementById('modalTitle').textContent = 'Editar Notícia';
+  document.getElementById('titleInput').value = item.title;
+  document.getElementById('subtitleInput').value = item.subtitle || '';
+  document.getElementById('authorInput').value = item.author;
+  document.getElementById('categoryInput').value = item.category;
+  document.getElementById('imageInput').value = item.image;
+  document.getElementById('contentInput').value = item.content;
+  document.getElementById('highlightInput').checked = item.highlight;
+  document.getElementById('createModal').classList.add('active');
+}
+
+// ACTIONS
+function saveNews() {
+  const title = document.getElementById('titleInput').value.trim();
+  const subtitle = document.getElementById('subtitleInput').value.trim();
+  const author = document.getElementById('authorInput').value.trim();
+  const category = document.getElementById('categoryInput').value;
+  const image = document.getElementById('imageInput').value.trim();
+  const content = document.getElementById('contentInput').value.trim();
+  const highlight = document.getElementById('highlightInput').checked;
+
+  if (!title || !author || !content) {
+    alert('Preencha os campos obrigatórios: Título, Autor e Conteúdo');
+    return;
+  }
+
+  if (editingId) {
+    const item = newsData.find(n => n.id === editingId);
+    item.title = title;
+    item.subtitle = subtitle;
+    item.author = author;
+    item.category = category;
+    item.image = image || item.image;
+    item.content = content;
+    item.highlight = highlight;
+  } else {
+    newsData.unshift({
+      id: Math.max(...newsData.map(n => n.id), 0) + 1,
+      title,
+      subtitle,
+      author,
+      category,
+      image: image || 'https://images.unsplash.com/photo-1557804506-669714531433?w=600&h=400&fit=crop',
+      content,
+      highlight,
+      date: new Date().toLocaleDateString('pt-BR'),
+      views: 0
+    });
+  }
+
+  if (highlight) {
+    newsData.forEach(n => { if (n.id !== (editingId || newsData[0].id)) n.highlight = false; });
+  }
+
+  closeCreateModal();
+  filteredNews = newsData;
+  render();
+}
+
+function deleteNews(event, id) {
+  event.stopPropagation();
+  if (confirm('Tem certeza que deseja excluir esta notícia?')) {
+    newsData = newsData.filter(n => n.id !== id);
+    filteredNews = newsData;
+    render();
+  }
+}
+
+function toggleHighlight(event, id) {
+  event.stopPropagation();
+  newsData.forEach(n => n.highlight = n.id === id);
+  filteredNews = newsData;
+  render();
+}
+
+// CLOSE MODAL ON ESC
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    closeCreateModal();
+    closeViewModal();
+  }
+});
+
+// CLOSE MODAL ON OUTSIDE CLICK
+document.getElementById('createModal').addEventListener('click', (e) => {
+  if (e.target.id === 'createModal') closeCreateModal();
+});
+
+document.getElementById('viewModal').addEventListener('click', (e) => {
+  if (e.target.id === 'viewModal') closeViewModal();
+});
+
+// INIT
+render();
+</script>
+
+</body>
+</html>
