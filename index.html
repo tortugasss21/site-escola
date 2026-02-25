@@ -9,7 +9,7 @@
 body{
     margin:0;
     font-family:Arial, Helvetica, sans-serif;
-    background:#f0f2f5;
+    background:#f5f5f5;
 }
 
 header{
@@ -26,24 +26,12 @@ header button{
     color:white;
     border-radius:6px;
     cursor:pointer;
-    margin-top:10px;
 }
 
 .container{
     max-width:1200px;
     margin:20px auto;
     padding:0 15px;
-}
-
-.search{
-    margin-bottom:20px;
-}
-
-.search input{
-    width:100%;
-    padding:10px;
-    border-radius:6px;
-    border:1px solid #ccc;
 }
 
 .grid{
@@ -72,26 +60,15 @@ header button{
     flex:1;
 }
 
-.card h3{
-    margin-top:0;
-}
-
-.card small{
-    color:gray;
-}
-
 .card button{
-    margin-right:5px;
     margin-top:10px;
     padding:6px 10px;
     border:none;
     border-radius:5px;
     cursor:pointer;
+    background:#2196f3;
+    color:white;
 }
-
-.edit{ background:#ff9800; color:white;}
-.delete{ background:#f44336; color:white;}
-.feature{ background:#2196f3; color:white;}
 
 .modal{
     position:fixed;
@@ -113,8 +90,7 @@ header button{
 }
 
 .modal-content input,
-.modal-content textarea,
-.modal-content select{
+.modal-content textarea{
     width:100%;
     margin-bottom:10px;
     padding:8px;
@@ -125,8 +101,19 @@ header button{
     color:white;
 }
 
-.highlight{
-    border:3px solid gold;
+#singleView{
+    display:none;
+    background:white;
+    padding:20px;
+    border-radius:10px;
+    box-shadow:0 4px 10px rgba(0,0,0,0.1);
+}
+
+#singleView img{
+    width:100%;
+    max-height:400px;
+    object-fit:cover;
+    margin-bottom:20px;
 }
 </style>
 </head>
@@ -135,30 +122,24 @@ header button{
 
 <header>
     <h1>Portal Master News</h1>
-    <button onclick="openModal()">Criar Nova Notícia</button>
+    <button onclick="openModal()">Criar Notícia</button>
 </header>
 
 <div class="container">
 
-<div class="search">
-    <input type="text" id="searchInput" placeholder="Buscar notícias..." onkeyup="searchNews()">
+<div id="homeView">
+    <div class="grid" id="newsContainer"></div>
 </div>
 
-<div class="grid" id="newsContainer"></div>
+<div id="singleView"></div>
 
 </div>
 
 <div class="modal" id="newsModal">
     <div class="modal-content">
-        <h2 id="modalTitle">Nova Notícia</h2>
+        <h2>Nova Notícia</h2>
         <input type="text" id="title" placeholder="Título">
-        <textarea id="content" placeholder="Conteúdo"></textarea>
-        <select id="category">
-            <option value="Brasil">Brasil</option>
-            <option value="Mundo">Mundo</option>
-            <option value="Tecnologia">Tecnologia</option>
-            <option value="Esportes">Esportes</option>
-        </select>
+        <textarea id="content" placeholder="Conteúdo completo"></textarea>
         <input type="file" id="imageInput" accept="image/*">
         <button onclick="saveNews()">Salvar</button>
         <button class="close" onclick="closeModal()">Cancelar</button>
@@ -167,7 +148,6 @@ header button{
 
 <script>
 let news = JSON.parse(localStorage.getItem("news")) || [];
-let editIndex = null;
 
 function renderNews(){
     const container = document.getElementById("newsContainer");
@@ -175,21 +155,34 @@ function renderNews(){
     news.forEach((item,index)=>{
         const card = document.createElement("div");
         card.className="card";
-        if(item.highlight) card.classList.add("highlight");
-
         card.innerHTML = `
             ${item.image ? `<img src="${item.image}">` : ""}
             <div class="card-content">
                 <h3>${item.title}</h3>
-                <small>${item.category}</small>
-                <p>${item.content.substring(0,100)}...</p>
-                <button class="edit" onclick="editNews(${index})">Editar</button>
-                <button class="delete" onclick="deleteNews(${index})">Excluir</button>
-                <button class="feature" onclick="highlightNews(${index})">Destaque</button>
+                <p>${item.content.substring(0,80)}...</p>
+                <button onclick="viewNews(${index})">Ler mais</button>
             </div>
         `;
         container.appendChild(card);
     });
+}
+
+function viewNews(index){
+    const item = news[index];
+    document.getElementById("homeView").style.display="none";
+    const single = document.getElementById("singleView");
+    single.style.display="block";
+    single.innerHTML = `
+        ${item.image ? `<img src="${item.image}">` : ""}
+        <h2>${item.title}</h2>
+        <p>${item.content}</p>
+        <button onclick="goBack()">Voltar</button>
+    `;
+}
+
+function goBack(){
+    document.getElementById("singleView").style.display="none";
+    document.getElementById("homeView").style.display="block";
 }
 
 function openModal(){
@@ -200,71 +193,31 @@ function closeModal(){
     document.getElementById("newsModal").style.display="none";
     document.getElementById("title").value="";
     document.getElementById("content").value="";
-    editIndex=null;
 }
 
 function saveNews(){
     const title=document.getElementById("title").value;
     const content=document.getElementById("content").value;
-    const category=document.getElementById("category").value;
     const imageInput=document.getElementById("imageInput");
 
-    if(!title || !content) return alert("Preencha todos os campos!");
+    if(!title || !content) return alert("Preencha tudo!");
 
     if(imageInput.files[0]){
         const reader=new FileReader();
         reader.onload=function(e){
-            saveData(e.target.result);
+            addNews(e.target.result);
         }
         reader.readAsDataURL(imageInput.files[0]);
     }else{
-        saveData(null);
+        addNews(null);
     }
 
-    function saveData(image){
-        const data={title,content,category,image,highlight:false};
-        if(editIndex!==null){
-            news[editIndex]=data;
-        }else{
-            news.push(data);
-        }
+    function addNews(image){
+        news.push({title,content,image});
         localStorage.setItem("news",JSON.stringify(news));
         closeModal();
         renderNews();
     }
-}
-
-function editNews(index){
-    editIndex=index;
-    const item=news[index];
-    document.getElementById("title").value=item.title;
-    document.getElementById("content").value=item.content;
-    document.getElementById("category").value=item.category;
-    openModal();
-}
-
-function deleteNews(index){
-    if(confirm("Excluir notícia?")){
-        news.splice(index,1);
-        localStorage.setItem("news",JSON.stringify(news));
-        renderNews();
-    }
-}
-
-function highlightNews(index){
-    news.forEach(n=>n.highlight=false);
-    news[index].highlight=true;
-    localStorage.setItem("news",JSON.stringify(news));
-    renderNews();
-}
-
-function searchNews(){
-    const term=document.getElementById("searchInput").value.toLowerCase();
-    const cards=document.querySelectorAll(".card");
-    cards.forEach((card,i)=>{
-        const title=news[i].title.toLowerCase();
-        card.style.display=title.includes(term)?"block":"none";
-    });
 }
 
 renderNews();
