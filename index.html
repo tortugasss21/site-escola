@@ -3,24 +3,24 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Portal Master News</title>
+<title>Portal Horizonte News</title>
 
 <style>
 body{
     margin:0;
     font-family:Arial, Helvetica, sans-serif;
-    background:#f5f5f5;
+    background:#eef1f5;
 }
 
 header{
-    background:#111;
+    background:#0d1117;
     color:white;
-    padding:20px;
+    padding:25px;
     text-align:center;
 }
 
 header button{
-    background:#00c853;
+    background:#16c784;
     border:none;
     padding:10px 15px;
     color:white;
@@ -34,17 +34,26 @@ header button{
     padding:0 15px;
 }
 
+.highlight-box{
+    background:white;
+    padding:20px;
+    border-radius:12px;
+    margin-bottom:30px;
+    box-shadow:0 4px 15px rgba(0,0,0,0.1);
+    border-left:6px solid gold;
+}
+
 .grid{
     display:grid;
-    grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+    grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
     gap:20px;
 }
 
 .card{
     background:white;
-    border-radius:10px;
+    border-radius:12px;
     overflow:hidden;
-    box-shadow:0 4px 10px rgba(0,0,0,0.1);
+    box-shadow:0 4px 15px rgba(0,0,0,0.08);
     display:flex;
     flex-direction:column;
 }
@@ -60,13 +69,17 @@ header button{
     flex:1;
 }
 
+.card small{
+    color:gray;
+}
+
 .card button{
     margin-top:10px;
-    padding:6px 10px;
+    padding:7px 10px;
     border:none;
-    border-radius:5px;
+    border-radius:6px;
     cursor:pointer;
-    background:#2196f3;
+    background:#1f6feb;
     color:white;
 }
 
@@ -76,7 +89,7 @@ header button{
     left:0;
     width:100%;
     height:100%;
-    background:rgba(0,0,0,0.7);
+    background:rgba(0,0,0,0.6);
     display:none;
     justify-content:center;
     align-items:center;
@@ -85,28 +98,28 @@ header button{
 .modal-content{
     background:white;
     padding:20px;
-    width:400px;
-    border-radius:10px;
+    width:450px;
+    border-radius:12px;
 }
 
 .modal-content input,
-.modal-content textarea{
+.modal-content textarea,
+.modal-content select{
     width:100%;
     margin-bottom:10px;
     padding:8px;
 }
 
-.close{
-    background:#f44336;
-    color:white;
+.modal-content textarea{
+    height:120px;
 }
 
 #singleView{
     display:none;
     background:white;
-    padding:20px;
-    border-radius:10px;
-    box-shadow:0 4px 10px rgba(0,0,0,0.1);
+    padding:25px;
+    border-radius:12px;
+    box-shadow:0 4px 15px rgba(0,0,0,0.1);
 }
 
 #singleView img{
@@ -121,11 +134,13 @@ header button{
 <body>
 
 <header>
-    <h1>Portal Master News</h1>
+    <h1>Portal Horizonte News</h1>
     <button onclick="openModal()">Criar Notícia</button>
 </header>
 
 <div class="container">
+
+<div id="highlightArea"></div>
 
 <div id="homeView">
     <div class="grid" id="newsContainer"></div>
@@ -139,85 +154,149 @@ header button{
     <div class="modal-content">
         <h2>Nova Notícia</h2>
         <input type="text" id="title" placeholder="Título">
+        <input type="text" id="author" placeholder="Autor">
+        <select id="category">
+            <option>Brasil</option>
+            <option>Mundo</option>
+            <option>Tecnologia</option>
+            <option>Esportes</option>
+        </select>
         <textarea id="content" placeholder="Conteúdo completo"></textarea>
         <input type="file" id="imageInput" accept="image/*">
-        <button onclick="saveNews()">Salvar</button>
-        <button class="close" onclick="closeModal()">Cancelar</button>
+        <label><input type="checkbox" id="highlight"> Deixar em destaque</label>
+        <button onclick="saveNews()">Publicar</button>
+        <button onclick="closeModal()">Cancelar</button>
     </div>
 </div>
 
 <script>
-let news = JSON.parse(localStorage.getItem("news")) || [];
+let news = JSON.parse(localStorage.getItem("news"));
+
+if(!news){
+news = [
+{
+title:"Brasil registra crescimento no setor tecnológico",
+author:"Redação",
+category:"Brasil",
+content:"O setor de tecnologia apresentou crescimento significativo neste trimestre, impulsionado por startups e investimentos internacionais. Especialistas apontam que o país pode se consolidar como um dos principais polos digitais da América Latina nos próximos anos.",
+image:"https://picsum.photos/800/400?1",
+highlight:true,
+date:new Date().toLocaleDateString()
+},
+{
+title:"Nova descoberta científica pode mudar medicina",
+author:"Equipe Ciência",
+category:"Mundo",
+content:"Pesquisadores anunciaram um avanço promissor no tratamento de doenças raras. A descoberta foi resultado de anos de pesquisa colaborativa entre universidades internacionais.",
+image:"https://picsum.photos/800/400?2",
+highlight:false,
+date:new Date().toLocaleDateString()
+}
+];
+localStorage.setItem("news",JSON.stringify(news));
+}
 
 function renderNews(){
-    const container = document.getElementById("newsContainer");
-    container.innerHTML = "";
-    news.forEach((item,index)=>{
-        const card = document.createElement("div");
-        card.className="card";
-        card.innerHTML = `
-            ${item.image ? `<img src="${item.image}">` : ""}
-            <div class="card-content">
-                <h3>${item.title}</h3>
-                <p>${item.content.substring(0,80)}...</p>
-                <button onclick="viewNews(${index})">Ler mais</button>
-            </div>
-        `;
-        container.appendChild(card);
-    });
+const container=document.getElementById("newsContainer");
+const highlightArea=document.getElementById("highlightArea");
+container.innerHTML="";
+highlightArea.innerHTML="";
+
+news.forEach((item,index)=>{
+if(item.highlight){
+highlightArea.innerHTML=`
+<div class="highlight-box">
+<h2>🔥 Destaque</h2>
+<h3>${item.title}</h3>
+<p>${item.content.substring(0,150)}...</p>
+<button onclick="viewNews(${index})">Ler matéria completa</button>
+</div>`;
+}
+
+const card=document.createElement("div");
+card.className="card";
+card.innerHTML=`
+<img src="${item.image}">
+<div class="card-content">
+<h3>${item.title}</h3>
+<small>${item.category} | ${item.author} | ${item.date}</small>
+<p>${item.content.substring(0,100)}...</p>
+<button onclick="viewNews(${index})">Ler mais</button>
+<button onclick="toggleHighlight(${index})">Destaque</button>
+</div>
+`;
+container.appendChild(card);
+});
 }
 
 function viewNews(index){
-    const item = news[index];
-    document.getElementById("homeView").style.display="none";
-    const single = document.getElementById("singleView");
-    single.style.display="block";
-    single.innerHTML = `
-        ${item.image ? `<img src="${item.image}">` : ""}
-        <h2>${item.title}</h2>
-        <p>${item.content}</p>
-        <button onclick="goBack()">Voltar</button>
-    `;
+const item=news[index];
+document.getElementById("homeView").style.display="none";
+const single=document.getElementById("singleView");
+single.style.display="block";
+single.innerHTML=`
+<img src="${item.image}">
+<h2>${item.title}</h2>
+<small>${item.category} | ${item.author} | ${item.date}</small>
+<p style="margin-top:15px;">${item.content}</p>
+<br>
+<button onclick="goBack()">Voltar</button>
+`;
 }
 
 function goBack(){
-    document.getElementById("singleView").style.display="none";
-    document.getElementById("homeView").style.display="block";
+document.getElementById("singleView").style.display="none";
+document.getElementById("homeView").style.display="block";
 }
 
 function openModal(){
-    document.getElementById("newsModal").style.display="flex";
+document.getElementById("newsModal").style.display="flex";
 }
 
 function closeModal(){
-    document.getElementById("newsModal").style.display="none";
-    document.getElementById("title").value="";
-    document.getElementById("content").value="";
+document.getElementById("newsModal").style.display="none";
 }
 
 function saveNews(){
-    const title=document.getElementById("title").value;
-    const content=document.getElementById("content").value;
-    const imageInput=document.getElementById("imageInput");
+const title=document.getElementById("title").value;
+const author=document.getElementById("author").value;
+const category=document.getElementById("category").value;
+const content=document.getElementById("content").value;
+const imageInput=document.getElementById("imageInput");
+const highlight=document.getElementById("highlight").checked;
 
-    if(!title || !content) return alert("Preencha tudo!");
+if(!title || !author || !content) return alert("Preencha todos os campos!");
 
-    if(imageInput.files[0]){
-        const reader=new FileReader();
-        reader.onload=function(e){
-            addNews(e.target.result);
-        }
-        reader.readAsDataURL(imageInput.files[0]);
-    }else{
-        addNews(null);
-    }
+const reader=new FileReader();
+reader.onload=function(e){
+const image=e.target.result;
+news.unshift({
+title,author,category,content,image,highlight,
+date:new Date().toLocaleDateString()
+});
+localStorage.setItem("news",JSON.stringify(news));
+closeModal();
+renderNews();
+}
+if(imageInput.files[0]){
+reader.readAsDataURL(imageInput.files[0]);
+}else{
+news.unshift({
+title,author,category,content,image:"https://picsum.photos/800/400?random="+Math.random(),
+highlight,
+date:new Date().toLocaleDateString()
+});
+localStorage.setItem("news",JSON.stringify(news));
+closeModal();
+renderNews();
+}
+}
 
-    function addNews(image){
-        news.push({title,content,image});
-        localStorage.setItem("news",JSON.stringify(news));
-        closeModal();
-        renderNews();
-    }
+function toggleHighlight(index){
+news.forEach(n=>n.highlight=false);
+news[index].highlight=true;
+localStorage.setItem("news",JSON.stringify(news));
+renderNews();
 }
 
 renderNews();
