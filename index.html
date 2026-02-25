@@ -935,7 +935,7 @@ body.dark .back-btn:hover {
 
 <script>
 // DATA
-let newsData = [
+const defaultNews = [
   {
     id: 1,
     title: 'Brasil avança em tecnologia digital',
@@ -943,7 +943,7 @@ let newsData = [
     author: 'Marina Silva',
     category: 'Brasil',
     content: 'O Brasil registrou crescimento expressivo no setor tecnológico, com investimentos estrangeiros alcançando níveis históricos.\n\nEspecialistas apontam que o aumento de investimentos em startups e empresas de tecnologia reflete a confiança global no potencial inovador brasileiro.\n\nO cenário é considerado promissor para os próximos anos, com projeções de que o país se torne um dos maiores hubs de inovação da América Latina.',
-    image: 'https://images.unsplash.com/photo-1460925895917-adf4e4be5dbd?w=1200&h=600&fit=crop',
+    image: 'https://images.pexels.com/photos/3944387/pexels-photo-3944387.jpeg?w=1200&h=600&fit=crop',
     highlight: true,
     date: '10/12/2024',
     views: 12500
@@ -954,7 +954,7 @@ let newsData = [
     author: 'João Santos',
     category: 'Mundo',
     content: 'Estudos recentes indicam que as mudanças climáticas estão impactando significativamente a produção agrícola mundial.\n\nSecas prolongadas e chuvas intensas afetam safras em diversas regiões do planeta.\n\nGovernos e organizações internacionais buscam soluções sustentáveis para mitigar os efeitos.',
-    image: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=600&h=400&fit=crop',
+    image: 'https://images.pexels.com/photos/6962695/pexels-photo-6962695.jpeg?w=600&h=400&fit=crop',
     highlight: false,
     date: '09/12/2024',
     views: 8300
@@ -965,7 +965,7 @@ let newsData = [
     author: 'Dr. Lucas Pereira',
     category: 'Tecnologia',
     content: 'Novos modelos de IA estão sendo utilizados para diagnósticos mais precisos e rápidos em hospitais.\n\nCirurgiões utilizando robótica inteligente conseguem realizar operações com maior precisão.\n\nA tecnologia promete salvar vidas e reduzir custos no sistema de saúde.',
-    image: 'https://images.unsplash.com/photo-1576091160550-112173f7f869?w=600&h=400&fit=crop',
+    image: 'https://images.pexels.com/photos/8386434/pexels-photo-8386434.jpeg?w=600&h=400&fit=crop',
     highlight: false,
     date: '08/12/2024',
     views: 15200
@@ -976,15 +976,22 @@ let newsData = [
     author: 'Paulo Gomes',
     category: 'Esportes',
     content: 'Análise das seleções mais fortes para a próxima Copa do Mundo a ser realizada em 2026.\n\nFrança, Argentina e Brasil aparecem como principais candidatos ao título.\n\nSeleções emergentes também ganham destaque nas análises técnicas.',
-    image: 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=600&h=400&fit=crop',
+    image: 'https://images.pexels.com/photos/3394650/pexels-photo-3394650.jpeg?w=600&h=400&fit=crop',
     highlight: false,
     date: '07/12/2024',
     views: 19400
   }
 ];
 
+let newsData = JSON.parse(localStorage.getItem('horizonte-elite-news')) || defaultNews;
+
 let editingId = null;
 let filteredNews = [...newsData];
+
+// SALVAR NO LOCALSTORAGE
+function saveToLocalStorage() {
+  localStorage.setItem('horizonte-elite-news', JSON.stringify(newsData));
+}
 
 // DARK MODE
 function toggleDarkMode() {
@@ -1194,6 +1201,7 @@ function saveNews() {
     newsData.forEach(n => { if (n.id !== (editingId || newsData[0].id)) n.highlight = false; });
   }
 
+  saveToLocalStorage();
   closeCreateModal();
   filteredNews = newsData;
   render();
@@ -1204,6 +1212,7 @@ function deleteNews(event, id) {
   if (confirm('Tem certeza que deseja excluir esta notícia?')) {
     newsData = newsData.filter(n => n.id !== id);
     filteredNews = newsData;
+    saveToLocalStorage();
     render();
   }
 }
@@ -1212,6 +1221,7 @@ function toggleHighlight(event, id) {
   event.stopPropagation();
   newsData.forEach(n => n.highlight = n.id === id);
   filteredNews = newsData;
+  saveToLocalStorage();
   render();
 }
 
