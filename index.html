@@ -3,303 +3,373 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Portal Horizonte News</title>
+<title>Portal Horizonte Pro</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 
 <style>
+*{margin:0;padding:0;box-sizing:border-box}
+
 body{
-    margin:0;
-    font-family:Arial, Helvetica, sans-serif;
-    background:#eef1f5;
+font-family:'Poppins',sans-serif;
+background:#f4f6f9;
+color:#1e1e1e;
+transition:0.3s;
+}
+
+.dark{
+background:#0f172a;
+color:white;
 }
 
 header{
-    background:#0d1117;
-    color:white;
-    padding:25px;
-    text-align:center;
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:20px 40px;
+background:white;
+box-shadow:0 2px 10px rgba(0,0,0,0.05);
+position:sticky;
+top:0;
+z-index:100;
 }
 
-header button{
-    background:#16c784;
-    border:none;
-    padding:10px 15px;
-    color:white;
-    border-radius:6px;
-    cursor:pointer;
+.dark header{background:#111827}
+
+.logo{
+font-size:1.5rem;
+font-weight:700;
 }
+
+nav{
+display:flex;
+gap:20px;
+}
+
+nav button{
+background:none;
+border:none;
+cursor:pointer;
+font-weight:500;
+}
+
+.actions{
+display:flex;
+gap:10px;
+}
+
+.btn{
+padding:8px 14px;
+border-radius:8px;
+border:none;
+cursor:pointer;
+font-weight:500;
+}
+
+.primary{background:#2563eb;color:white}
+.secondary{background:#e5e7eb}
+.dark .secondary{background:#374151;color:white}
 
 .container{
-    max-width:1200px;
-    margin:20px auto;
-    padding:0 15px;
+max-width:1200px;
+margin:40px auto;
+padding:0 20px;
 }
 
-.highlight-box{
-    background:white;
-    padding:20px;
-    border-radius:12px;
-    margin-bottom:30px;
-    box-shadow:0 4px 15px rgba(0,0,0,0.1);
-    border-left:6px solid gold;
+.hero{
+background:white;
+padding:30px;
+border-radius:20px;
+margin-bottom:40px;
+box-shadow:0 10px 25px rgba(0,0,0,0.05);
+cursor:pointer;
+transition:0.3s;
+}
+
+.dark .hero{background:#1f2937}
+
+.hero:hover{transform:scale(1.01)}
+
+.hero img{
+width:100%;
+max-height:400px;
+object-fit:cover;
+border-radius:15px;
+margin-bottom:20px;
 }
 
 .grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
-    gap:20px;
+display:grid;
+grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+gap:25px;
 }
 
 .card{
-    background:white;
-    border-radius:12px;
-    overflow:hidden;
-    box-shadow:0 4px 15px rgba(0,0,0,0.08);
-    display:flex;
-    flex-direction:column;
+background:white;
+padding:20px;
+border-radius:18px;
+box-shadow:0 8px 20px rgba(0,0,0,0.05);
+transition:0.3s;
+cursor:pointer;
+}
+
+.dark .card{background:#1f2937}
+
+.card:hover{
+transform:translateY(-5px);
 }
 
 .card img{
-    width:100%;
-    height:200px;
-    object-fit:cover;
-}
-
-.card-content{
-    padding:15px;
-    flex:1;
+width:100%;
+height:180px;
+object-fit:cover;
+border-radius:12px;
+margin-bottom:15px;
 }
 
 .card small{
-    color:gray;
+opacity:0.6;
 }
 
-.card button{
-    margin-top:10px;
-    padding:7px 10px;
-    border:none;
-    border-radius:6px;
-    cursor:pointer;
-    background:#1f6feb;
-    color:white;
+.search{
+margin-bottom:30px;
+}
+
+.search input{
+width:100%;
+padding:12px;
+border-radius:10px;
+border:1px solid #ddd;
 }
 
 .modal{
-    position:fixed;
-    top:0;
-    left:0;
-    width:100%;
-    height:100%;
-    background:rgba(0,0,0,0.6);
-    display:none;
-    justify-content:center;
-    align-items:center;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.6);
+display:none;
+justify-content:center;
+align-items:center;
 }
 
 .modal-content{
-    background:white;
-    padding:20px;
-    width:450px;
-    border-radius:12px;
+background:white;
+padding:30px;
+border-radius:20px;
+width:500px;
+max-height:90vh;
+overflow:auto;
 }
+
+.dark .modal-content{background:#1f2937}
 
 .modal-content input,
 .modal-content textarea,
 .modal-content select{
-    width:100%;
-    margin-bottom:10px;
-    padding:8px;
-}
-
-.modal-content textarea{
-    height:120px;
+width:100%;
+padding:10px;
+margin-bottom:15px;
+border-radius:8px;
+border:1px solid #ccc;
 }
 
 #singleView{
-    display:none;
-    background:white;
-    padding:25px;
-    border-radius:12px;
-    box-shadow:0 4px 15px rgba(0,0,0,0.1);
+display:none;
+background:white;
+padding:30px;
+border-radius:20px;
+box-shadow:0 10px 25px rgba(0,0,0,0.05);
 }
 
+.dark #singleView{background:#1f2937}
+
 #singleView img{
-    width:100%;
-    max-height:400px;
-    object-fit:cover;
-    margin-bottom:20px;
+width:100%;
+max-height:450px;
+object-fit:cover;
+border-radius:15px;
+margin-bottom:20px;
 }
 </style>
 </head>
-
 <body>
 
 <header>
-    <h1>Portal Horizonte News</h1>
-    <button onclick="openModal()">Criar Notícia</button>
+<div class="logo">Portal Horizonte</div>
+<nav>
+<button onclick="filterCategory('Todas')">Todas</button>
+<button onclick="filterCategory('Brasil')">Brasil</button>
+<button onclick="filterCategory('Mundo')">Mundo</button>
+<button onclick="filterCategory('Tecnologia')">Tecnologia</button>
+</nav>
+<div class="actions">
+<button class="btn secondary" onclick="toggleDark()">🌙</button>
+<button class="btn primary" onclick="openModal()">Criar</button>
+</div>
 </header>
 
 <div class="container">
 
-<div id="highlightArea"></div>
-
-<div id="homeView">
-    <div class="grid" id="newsContainer"></div>
+<div class="search">
+<input type="text" placeholder="Buscar notícias..." onkeyup="searchNews(this.value)">
 </div>
+
+<div id="heroContainer"></div>
+
+<div class="grid" id="newsGrid"></div>
 
 <div id="singleView"></div>
 
 </div>
 
-<div class="modal" id="newsModal">
-    <div class="modal-content">
-        <h2>Nova Notícia</h2>
-        <input type="text" id="title" placeholder="Título">
-        <input type="text" id="author" placeholder="Autor">
-        <select id="category">
-            <option>Brasil</option>
-            <option>Mundo</option>
-            <option>Tecnologia</option>
-            <option>Esportes</option>
-        </select>
-        <textarea id="content" placeholder="Conteúdo completo"></textarea>
-        <input type="file" id="imageInput" accept="image/*">
-        <label><input type="checkbox" id="highlight"> Deixar em destaque</label>
-        <button onclick="saveNews()">Publicar</button>
-        <button onclick="closeModal()">Cancelar</button>
-    </div>
+<div class="modal" id="modal">
+<div class="modal-content">
+<h2>Nova Notícia</h2>
+<input type="text" id="title" placeholder="Título">
+<input type="text" id="author" placeholder="Autor">
+<select id="category">
+<option>Brasil</option>
+<option>Mundo</option>
+<option>Tecnologia</option>
+</select>
+<textarea id="content" placeholder="Conteúdo completo"></textarea>
+<input type="file" id="imageInput">
+<label><input type="checkbox" id="highlight"> Destaque principal</label>
+<button class="btn primary" onclick="saveNews()">Publicar</button>
+<button class="btn secondary" onclick="closeModal()">Cancelar</button>
+</div>
 </div>
 
 <script>
-let news = JSON.parse(localStorage.getItem("news"));
+let news = JSON.parse(localStorage.getItem("newsPro"));
 
 if(!news){
-news = [
+news=[
 {
-title:"Brasil registra crescimento no setor tecnológico",
+title:"Brasil avança no setor de inovação digital",
 author:"Redação",
 category:"Brasil",
-content:"O setor de tecnologia apresentou crescimento significativo neste trimestre, impulsionado por startups e investimentos internacionais. Especialistas apontam que o país pode se consolidar como um dos principais polos digitais da América Latina nos próximos anos.",
-image:"https://picsum.photos/800/400?1",
+content:"O crescimento acelerado do setor tecnológico coloca o país em posição estratégica no cenário latino-americano...",
+image:"https://picsum.photos/1200/600?1",
 highlight:true,
-date:new Date().toLocaleDateString()
+date:new Date().toLocaleString()
 },
 {
-title:"Nova descoberta científica pode mudar medicina",
-author:"Equipe Ciência",
-category:"Mundo",
-content:"Pesquisadores anunciaram um avanço promissor no tratamento de doenças raras. A descoberta foi resultado de anos de pesquisa colaborativa entre universidades internacionais.",
-image:"https://picsum.photos/800/400?2",
+title:"Inteligência Artificial transforma mercado global",
+author:"Equipe Tech",
+category:"Tecnologia",
+content:"Empresas investem bilhões em IA para automatizar processos e aumentar produtividade...",
+image:"https://picsum.photos/600/400?2",
 highlight:false,
-date:new Date().toLocaleDateString()
+date:new Date().toLocaleString()
 }
 ];
-localStorage.setItem("news",JSON.stringify(news));
+localStorage.setItem("newsPro",JSON.stringify(news));
 }
 
-function renderNews(){
-const container=document.getElementById("newsContainer");
-const highlightArea=document.getElementById("highlightArea");
-container.innerHTML="";
-highlightArea.innerHTML="";
+let currentFilter="Todas";
 
-news.forEach((item,index)=>{
+function render(){
+const hero=document.getElementById("heroContainer");
+const grid=document.getElementById("newsGrid");
+hero.innerHTML="";
+grid.innerHTML="";
+
+let filtered=news.filter(n=>currentFilter==="Todas"||n.category===currentFilter);
+
+filtered.forEach((item,index)=>{
 if(item.highlight){
-highlightArea.innerHTML=`
-<div class="highlight-box">
-<h2>🔥 Destaque</h2>
-<h3>${item.title}</h3>
+hero.innerHTML=`
+<div class="hero" onclick="viewNews(${index})">
+<img src="${item.image}">
+<h2>${item.title}</h2>
 <p>${item.content.substring(0,150)}...</p>
-<button onclick="viewNews(${index})">Ler matéria completa</button>
+<small>${item.category} | ${item.author} | ${item.date}</small>
+</div>`;
+}else{
+grid.innerHTML+=`
+<div class="card" onclick="viewNews(${index})">
+<img src="${item.image}">
+<h3>${item.title}</h3>
+<p>${item.content.substring(0,80)}...</p>
+<small>${item.category} | ${item.author}</small>
 </div>`;
 }
-
-const card=document.createElement("div");
-card.className="card";
-card.innerHTML=`
-<img src="${item.image}">
-<div class="card-content">
-<h3>${item.title}</h3>
-<small>${item.category} | ${item.author} | ${item.date}</small>
-<p>${item.content.substring(0,100)}...</p>
-<button onclick="viewNews(${index})">Ler mais</button>
-<button onclick="toggleHighlight(${index})">Destaque</button>
-</div>
-`;
-container.appendChild(card);
 });
+}
+
+function filterCategory(cat){
+currentFilter=cat;
+render();
+}
+
+function searchNews(term){
+term=term.toLowerCase();
+news=news.filter(n=>n.title.toLowerCase().includes(term)||n.content.toLowerCase().includes(term));
+render();
+news=JSON.parse(localStorage.getItem("newsPro"));
 }
 
 function viewNews(index){
 const item=news[index];
-document.getElementById("homeView").style.display="none";
-const single=document.getElementById("singleView");
-single.style.display="block";
-single.innerHTML=`
+document.getElementById("singleView").style.display="block";
+document.getElementById("newsGrid").style.display="none";
+document.getElementById("heroContainer").style.display="none";
+
+document.getElementById("singleView").innerHTML=`
 <img src="${item.image}">
 <h2>${item.title}</h2>
+<p>${item.content}</p>
 <small>${item.category} | ${item.author} | ${item.date}</small>
-<p style="margin-top:15px;">${item.content}</p>
-<br>
-<button onclick="goBack()">Voltar</button>
+<br><br>
+<button class="btn secondary" onclick="goBack()">Voltar</button>
 `;
 }
 
 function goBack(){
 document.getElementById("singleView").style.display="none";
-document.getElementById("homeView").style.display="block";
+document.getElementById("newsGrid").style.display="grid";
+document.getElementById("heroContainer").style.display="block";
 }
 
-function openModal(){
-document.getElementById("newsModal").style.display="flex";
-}
-
-function closeModal(){
-document.getElementById("newsModal").style.display="none";
-}
+function openModal(){document.getElementById("modal").style.display="flex";}
+function closeModal(){document.getElementById("modal").style.display="none";}
 
 function saveNews(){
 const title=document.getElementById("title").value;
 const author=document.getElementById("author").value;
 const category=document.getElementById("category").value;
 const content=document.getElementById("content").value;
-const imageInput=document.getElementById("imageInput");
 const highlight=document.getElementById("highlight").checked;
-
-if(!title || !author || !content) return alert("Preencha todos os campos!");
+const imageInput=document.getElementById("imageInput");
 
 const reader=new FileReader();
 reader.onload=function(e){
-const image=e.target.result;
+if(highlight) news.forEach(n=>n.highlight=false);
 news.unshift({
-title,author,category,content,image,highlight,
-date:new Date().toLocaleDateString()
+title,author,category,content,
+image:e.target.result,
+highlight,
+date:new Date().toLocaleString()
 });
-localStorage.setItem("news",JSON.stringify(news));
+localStorage.setItem("newsPro",JSON.stringify(news));
 closeModal();
-renderNews();
-}
+render();
+};
 if(imageInput.files[0]){
 reader.readAsDataURL(imageInput.files[0]);
 }else{
-news.unshift({
-title,author,category,content,image:"https://picsum.photos/800/400?random="+Math.random(),
-highlight,
-date:new Date().toLocaleDateString()
-});
-localStorage.setItem("news",JSON.stringify(news));
-closeModal();
-renderNews();
+reader.onload({target:{result:"https://picsum.photos/800/400?random="+Math.random()}});
 }
 }
 
-function toggleHighlight(index){
-news.forEach(n=>n.highlight=false);
-news[index].highlight=true;
-localStorage.setItem("news",JSON.stringify(news));
-renderNews();
+function toggleDark(){
+document.body.classList.toggle("dark");
 }
 
-renderNews();
+render();
 </script>
 
 </body>
